@@ -1,26 +1,6 @@
 ======
-ds4drv
+ds4drv-cemu
 ======
-
-ds4drv is a Sony DualShock 4 userspace driver for Linux.
-
-* Discussions: https://groups.google.com/forum/#!forum/ds4drv
-* GitHub: https://github.com/chrippa/ds4drv
-* PyPI: https://pypi.python.org/pypi/ds4drv
-
-Features
---------
-
-- Option to emulate the Xbox 360 controller for compatibility with Steam games
-- Setting the LED color
-- Reminding you about low battery by flashing the LED
-- Using the trackpad as a mouse
-- Custom mappings, map buttons and sticks to whatever mouse, key or joystick
-  action you want
-- Settings profiles that can be cycled through with a button binding
-
-Fork information
-----------------
 
 - Added basic implementation of `cemuhook's <https://cemuhook.sshnuke.net/padudpserver.html>`_ UDP protocol.
 
@@ -28,22 +8,25 @@ This allows to use gyroscope, buttons and axes of DualShock 4 with `Cemu <http:/
 
 Implementation is quite dirty, not configurable and have only been tested with The Legend of Zelda: Breath of the Wild.
 
+Fork information
+----------------
+
+- Added a workaround for rumble
+
 How to install
 ^^^^^^^^^^^^^^
 
-The ds4drv driver is written in Python, so it can be installed using
-pip.
+The ds4drv driver is written in Python
 
 ::
 
-   # Install pip on Debian/Ubuntu/etc.
-   sudo apt-get install python3-pip
-
    # Install (or update to) the latest version of ds4drv-cemuhook from GitHub
-   pip3 install -U https://github.com/TheDrHax/ds4drv-cemuhook/archive/master.zip
+   pip3 install -U https://github.com/Dashboy1998/ds4drv-cemuhook/archive/master.zip
 
 How to use
 ^^^^^^^^^^
+
+The driver must be started after cemu for rumble support
 
 The driver supports all versions of Sony DualShock 4 controllers (I use
 DS4v2) connected via USB or Bluetooth.
@@ -65,7 +48,9 @@ optional):
 Connecting controller and starting the driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The driver can be started by using this command:
+Connect the controller & setup using the XInput API
+
+then start the driver using this command:
 
 ::
 
@@ -90,13 +75,7 @@ Configuring cemuhook
 
 This part is very easy. Cemuhook connects to localhost:26760 by default,
 so you just need to choose the first controller (DSU1) in ``Options`` -
-``GamePad motion source`` and then check the
-``Also use for buttons/axes`` option in the same menu. It is also a good
-idea to disable your controller in Cemu’s ``Input settings``.
-
-|image0|
-
-.. |image0| image:: https://i.redd.it/r9ilsyi5w1p11.png
+``GamePad motion source``.
 
 .. _this: https://github.com/TheDrHax/ds4drv-cemuhook/blob/master/udev/50-ds4drv.rules
 
@@ -116,29 +95,6 @@ but you may want to use your distro's packages if available:
 
 - `pyudev <http://pyudev.readthedocs.org/>`_ 0.16 or higher
 - `python-evdev <http://pythonhosted.org/evdev/>`_ 0.3.0 or higher
-
-
-Stable release
-^^^^^^^^^^^^^^
-
-Installing the latest release is simple by using `pip <http://www.pip-installer.org/>`_:
-
-.. code-block:: bash
-
-    $ sudo pip install ds4drv
-
-Development version
-^^^^^^^^^^^^^^^^^^^
-
-If you want to try out latest development code check out the source from
-Github and install it with:
-
-.. code-block:: bash
-
-    $ git clone https://github.com/chrippa/ds4drv.git
-    $ cd ds4drv
-    $ sudo python setup.py install
-
 
 Using
 -----
@@ -255,7 +211,7 @@ Known issues/limitations
 - `Bluetooth 2.0 dongles are known to have issues, 2.1+ is recommended. <https://github.com/chrippa/ds4drv/wiki/Bluetooth%20dongle%20compatibility>`_
 - The controller will never be shut off, you need to do this manually by
   holding the PS button until the controller shuts off
-- No rumble support
+- Needs to be started after cemu for Rumble
 
 
 Troubleshooting
@@ -293,12 +249,3 @@ These resources have been very helpful when creating ds4drv:
 - https://gist.github.com/johndrinkwater/7708901
 - https://github.com/ehd/node-ds4
 - http://forums.pcsx2.net/Thread-DS4-To-XInput-Wrapper
-
-
-----
-
-.. |dogecoin| image:: http://targetmoon.com/img/dogecoin.png
-  :alt: Dogecoin
-  :target: http://dogecoin.com/
-
-|dogecoin| DCbQgDa4aEbm9QNm4ix6zYV9vMirUDQLNj
