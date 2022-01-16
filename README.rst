@@ -13,6 +13,12 @@ Fork information
 
 - Added a workaround for rumble
 
+Future Development
+^^^^^^^^^^^^^^^^^^
+
+- Use dbus instead of deprecated hcitool for raw mode
+- Update to create both a XInput to be used for controller with Rumble and DSU for Motion without needing to be started before cemu
+
 How to install
 ^^^^^^^^^^^^^^
 
@@ -212,6 +218,7 @@ Known issues/limitations
 - The controller will never be shut off, you need to do this manually by
   holding the PS button until the controller shuts off
 - Needs to be started after cemu for Rumble
+- Does not work in raw mode as it relies on deprecated hcitool.
 
 
 Troubleshooting
