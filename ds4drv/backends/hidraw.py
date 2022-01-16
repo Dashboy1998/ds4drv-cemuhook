@@ -25,7 +25,8 @@ class HidrawDS4Device(DS4Device):
             self.report_fd = os.open(hidraw_device, os.O_RDWR | os.O_NONBLOCK)
             self.fd = FileIO(self.report_fd, "rb+", closefd=False)
             self.input_device = InputDevice(event_device)
-            self.input_device.grab()
+            # Commented out for Rumble workaround
+            #self.input_device.grab()
         except (OSError, IOError) as err:
             raise DeviceError(err)
 
@@ -72,7 +73,8 @@ class HidrawDS4Device(DS4Device):
             self.set_led(0, 0, 1)
 
             self.fd.close()
-            self.input_device.ungrab()
+            # Commented out for Rumble workaround
+            #self.input_device.ungrab()
         except IOError:
             pass
 
