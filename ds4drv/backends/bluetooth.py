@@ -1,5 +1,6 @@
 import socket
 import subprocess
+import re
 
 from ..backend import Backend
 from ..exceptions import BackendError, DeviceError
@@ -86,30 +87,44 @@ class BluetoothBackend(Backend):
     def setup(self):
         """Check if the bluetooth controller is available."""
         try:
-            subprocess.check_output(["hcitool", "clock"],
+            subprocess.check_output(["bluetoothctl", "power", "on"],
                                     stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError:
-            raise BackendError("'hcitool clock' returned error. Make sure "
-                               "your bluetooth device is powered up with "
-                               "'hciconfig hciX up'.")
+            raise BackendError("'bluetoothctl power on' returned error. Make sure "
+                               "your bluetooth device is plugged in with "
+                               "'bluetooth scan'.")
         except OSError:
-            raise BackendError("'hcitool' could not be found, make sure you "
+            raise BackendError("'bluetoothctl' could not be found, make sure you "
                                "have bluez-utils installed.")
 
     def scan(self):
         """Scan for bluetooth devices."""
+        #   Don't scan instead use paired-devices to get MAC address of devices
+        #   iterate over MAC addresses and add only "Connected: yes" devices
+        #   Keep only items which start with "Device" and have a valid MAC address
         try:
-            res = subprocess.check_output(["hcitool", "scan", "--flush"],
+            res = subprocess.check_output(["bluetoothctl", "devices"],
                                           stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError:
-             raise BackendError("'hcitool scan' returned error. Make sure "
+             raise BackendError("'bluetoothctl devices' returned error. Make sure "
                                 "your bluetooth device is powered up with "
-                                "'hciconfig hciX up'.")
+                                "'bluetooth power on'.")
 
         devices = []
-        res = res.splitlines()[1:]
-        for _, bdaddr, name in map(lambda l: l.split(b"\t"), res):
-            devices.append((bdaddr.decode("utf8"), name.decode("utf8")))
+        res = res.splitlines()
+        devices_i = []
+        for device in res:
+            device = device.decode("utf8")
+            if device.startswith("Device"):
+                p = re.compile(r'(?:[0-9a-fA-F]:?){12}')
+                # Get MAC address
+                mac = re.search(p, device)
+                # Check if contains MAC addres
+                if mac:
+                    # Get name of device
+                    name = device.split(mac[0] + ' ')[-1]
+                    # Add string of MAC and Name seperated by tab
+                    devices.append((mac[0], name))
 
         return devices
 
